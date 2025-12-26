@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="refresh" content="5" />
+    <title>Blackfong Control Core</title>
+    <link rel="stylesheet" href="/static/core.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="topbar">
+        <div class="title">Blackfong Control Core</div>
+        <div class="meta">localhost only · refresh 5s</div>
+      </div>
+
+      <div class="grid">
+        <div class="panel">
+          <h2>System Pulse</h2>
+          <div class="kv">
+            <div class="k">CPU</div><div class="v">{{ pulse.cpu_percent }}%</div>
+            <div class="k">RAM</div><div class="v">{{ pulse.memory_percent }}%</div>
+            <div class="k">Disk</div><div class="v">{{ pulse.disk_percent }}%</div>
+            <div class="k">Temp</div>
+            <div class="v">
+              {% if pulse.temp_c is not none %}
+                {{ "%.1f"|format(pulse.temp_c) }}°C
+              {% else %}
+                n/a
+              {% endif %}
+            </div>
+            <div class="k">Load</div>
+            <div class="v">
+              {{ pulse.load_avg["1m"] }} / {{ pulse.load_avg["5m"] }} / {{ pulse.load_avg["15m"] }}
+            </div>
+            <div class="k">Uptime</div><div class="v">{{ uptime_human }}</div>
+            <div class="k">Boot (UTC)</div><div class="v">{{ pulse.boot_time }}</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Endpoints</h2>
+          <div class="kv">
+            <div class="k">Pulse (JSON)</div><div class="v"><a href="/api/system/pulse">/api/system/pulse</a></div>
+            <div class="k">OpenAPI</div><div class="v"><a href="/docs">/docs</a></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">No JS frameworks. No fluff. Logged, eventually.</div>
+    </div>
+  </body>
+</html>
+

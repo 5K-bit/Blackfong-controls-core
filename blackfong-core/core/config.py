@@ -37,7 +37,21 @@ class Settings:
 
 
 def load_settings() -> Settings:
-    base_dir = Path(_env("BLACKFONG_BASE_DIR", "/opt/blackfong"))
+    # Deployment target is /opt/blackfong, but default to the repo root when
+    # running unprivileged (dev/test).
+    default_base = Path("/opt/blackfong")
+    repo_base = Path(__file__).resolve().parents[1]
+
+    base_dir_raw = os.getenv("BLACKFONG_BASE_DIR")
+    if base_dir_raw is not None and base_dir_raw.strip() != "":
+        base_dir = Path(base_dir_raw)
+    else:
+        base_dir = default_base
+        try:
+            base_dir.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            base_dir = repo_base
+
     data_dir = Path(_env("BLACKFONG_DATA_DIR", str(base_dir / "data")))
     db_path = Path(_env("BLACKFONG_DB_PATH", str(data_dir / "blackfong.db")))
     log_dir = Path(_env("BLACKFONG_LOG_DIR", str(data_dir / "logs")))

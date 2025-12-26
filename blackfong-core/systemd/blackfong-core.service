@@ -1,0 +1,15 @@
+[Unit]
+Description=Blackfong Control Core
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /opt/blackfong/core/main.py
+Restart=always
+User=root
+WorkingDirectory=/opt/blackfong
+Environment=BLACKFONG_API_HOST=127.0.0.1
+Environment=BLACKFONG_API_PORT=7331
+
+[Install]
+WantedBy=multi-user.target
