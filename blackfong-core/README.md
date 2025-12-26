@@ -34,13 +34,20 @@ Then open:
 Copy the project to `/opt/blackfong` so paths match the service file:
 
 ```bash
+sudo useradd --system --home /opt/blackfong --shell /usr/sbin/nologin blackfong || true
 sudo mkdir -p /opt/blackfong
 sudo rsync -a --delete ./ /opt/blackfong/
 sudo python3 -m pip install -r /opt/blackfong/requirements.txt
 
 sudo cp /opt/blackfong/systemd/blackfong-core.service /etc/systemd/system/blackfong-core.service
+sudo install -m 0440 /opt/blackfong/systemd/blackfong-sudoers /etc/sudoers.d/blackfong
+
+sudo mkdir -p /opt/blackfong/data /opt/blackfong/data/logs /opt/blackfong/data/backups
+sudo chown -R blackfong:blackfong /opt/blackfong/data
+
 sudo systemctl daemon-reload
-sudo systemctl enable --now blackfong-core.service
+sudo systemctl enable blackfong-core.service
+sudo systemctl start blackfong-core.service
 ```
 
 Check:

@@ -16,6 +16,30 @@
 
       <div class="grid">
         <div class="panel">
+          <h2>State</h2>
+          <div class="kv">
+            <div class="k">System</div>
+            <div class="v">{{ state }}{% if state_reasons and state != "STABLE" %} — {{ state_reasons|join(", ") }}{% endif %}</div>
+            <div class="k">Nodes</div>
+            <div class="v">{{ nodes_alive }} alive / {{ nodes_stale }} stale</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Last Events</h2>
+          <div class="kv">
+            {% if last_events and last_events|length > 0 %}
+              {% for e in last_events %}
+                <div class="k">{{ e.at }}</div>
+                <div class="v">[{{ e.severity|upper }}] ({{ e.source }}/{{ e.event_type }}) {{ e.message }}</div>
+              {% endfor %}
+            {% else %}
+              <div class="k">events</div><div class="v">none yet</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="panel">
           <h2>System Pulse</h2>
           <div class="kv">
             <div class="k">CPU</div><div class="v">{{ pulse.cpu_percent }}%</div>
@@ -42,6 +66,7 @@
           <h2>Endpoints</h2>
           <div class="kv">
             <div class="k">Pulse (JSON)</div><div class="v"><a href="/api/system/pulse">/api/system/pulse</a></div>
+            <div class="k">Config (JSON)</div><div class="v"><a href="/api/system/config">/api/system/config</a></div>
             <div class="k">OpenAPI</div><div class="v"><a href="/docs">/docs</a></div>
           </div>
         </div>

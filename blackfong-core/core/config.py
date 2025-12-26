@@ -24,6 +24,8 @@ class Settings:
     data_dir: Path
     db_path: Path
     log_dir: Path
+    backup_dir: Path
+    backup_keep_days: int
 
     # Network
     api_host: str
@@ -34,6 +36,7 @@ class Settings:
 
     # Safety rails
     allowed_systemd_units: set[str]
+    node_stale_seconds: int
 
 
 def load_settings() -> Settings:
@@ -55,6 +58,8 @@ def load_settings() -> Settings:
     data_dir = Path(_env("BLACKFONG_DATA_DIR", str(base_dir / "data")))
     db_path = Path(_env("BLACKFONG_DB_PATH", str(data_dir / "blackfong.db")))
     log_dir = Path(_env("BLACKFONG_LOG_DIR", str(data_dir / "logs")))
+    backup_dir = Path(_env("BLACKFONG_BACKUP_DIR", str(data_dir / "backups")))
+    backup_keep_days = _env_int("BLACKFONG_BACKUP_KEEP_DAYS", 7)
 
     api_host = _env("BLACKFONG_API_HOST", "127.0.0.1")
     api_port = _env_int("BLACKFONG_API_PORT", 7331)
@@ -67,15 +72,20 @@ def load_settings() -> Settings:
         u.strip() for u in allowed_units_raw.split(",") if u.strip()
     }
 
+    node_stale_seconds = _env_int("BLACKFONG_NODE_STALE_SECONDS", 60)
+
     return Settings(
         base_dir=base_dir,
         data_dir=data_dir,
         db_path=db_path,
         log_dir=log_dir,
+        backup_dir=backup_dir,
+        backup_keep_days=backup_keep_days,
         api_host=api_host,
         api_port=api_port,
         token=token,
         allowed_systemd_units=allowed_systemd_units,
+        node_stale_seconds=node_stale_seconds,
     )
 
 

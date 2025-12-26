@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import subprocess
 from datetime import datetime, timezone
 
@@ -10,8 +11,8 @@ from core.db.models import CommandRun
 
 
 ALLOWED_COMMANDS: dict[str, list[str]] = {
-    "reboot": ["reboot"],
-    "shutdown": ["shutdown", "-h", "now"],
+    "reboot": ["/sbin/reboot"],
+    "shutdown": ["/sbin/shutdown", "-h", "now"],
     "update": ["apt", "update"],
 }
 
@@ -20,10 +21,11 @@ def list_allowed() -> list[str]:
     return sorted(ALLOWED_COMMANDS.keys())
 
 
-def run_command(db: Session, name: str) -> CommandRun:
+def run_command(db: Session, *, name: str, requested_by: str | None) -> CommandRun:
     now = datetime.now(tz=timezone.utc)
     run = CommandRun(
         name=name,
+        requested_by=requested_by,
         requested_at=now,
         started_at=None,
         finished_at=None,
@@ -43,6 +45,11 @@ def run_command(db: Session, name: str) -> CommandRun:
         db.commit()
         db.refresh(run)
         return run
+
+    if os.geteuid() != 0 and cmd and cmd[0].startswith("/"):
+        # Root-only commands (reboot/shutdown) must pass through sudo allowlist.
+        if cmd[0] in {"/sbin/reboot", "/sbin/shutdown"}:
+            cmd = ["sudo", "-n", *cmd]
 
     run.status = "RUNNING"
     run.started_at = datetime.now(tz=timezone.utc)
