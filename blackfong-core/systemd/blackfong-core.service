@@ -1,0 +1,19 @@
+[Unit]
+Description=Blackfong Control Core
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /opt/blackfong/core/main.py
+Restart=always
+RestartSec=2
+TimeoutStopSec=10
+KillMode=process
+User=blackfong
+Group=blackfong
+WorkingDirectory=/opt/blackfong
+Environment=BLACKFONG_API_HOST=127.0.0.1
+Environment=BLACKFONG_API_PORT=7331
+
+[Install]
+WantedBy=multi-user.target

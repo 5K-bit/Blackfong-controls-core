@@ -1,0 +1,8 @@
+# /etc/sudoers.d/blackfong (install with: sudo visudo -cf <file>)
+#
+# Allow the blackfong daemon controlled root-only actions.
+# Keep it tight. No full root shells.
+
+blackfong ALL=(root) NOPASSWD: /bin/systemctl *
+blackfong ALL=(root) NOPASSWD: /sbin/reboot
+blackfong ALL=(root) NOPASSWD: /sbin/shutdown
